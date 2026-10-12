@@ -39,7 +39,7 @@ def build_session(token: str) -> requests.Session:
         total=5,
         backoff_factor=1,  # Waits 0, 2, 4, 8 seconds between attempts.
         status_forcelist=[429, 500, 502, 503, 504],  # Only transient errors.
-        raise_on_status=False,  # After the last attempt, return the response so raise_for_status() reports it.
+        raise_on_status=False,  # Let raise_for_status() report the final error.
     )
     session.mount("https://", HTTPAdapter(max_retries=retry))
     return session
@@ -75,7 +75,10 @@ def main() -> None:
         repo = fetch_repo(session, full_name)
         logger.info(
             "%-35s %-16s stars=%7d forks=%6d",
-            repo["full_name"], category, repo["stargazers_count"], repo["forks_count"],
+            repo["full_name"],
+            category,
+            repo["stargazers_count"],
+            repo["forks_count"],
         )
 
     logger.info("Done")

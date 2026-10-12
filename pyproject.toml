@@ -8,3 +8,21 @@ dependencies = [
     "requests>=2.34.2",
     "urllib3>=2.8.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes: unused imports, undefined names
+    "I",   # isort: import order
+    "UP",  # pyupgrade: modern Python syntax
+    "B",   # flake8-bugbear: likely bugs
+]
