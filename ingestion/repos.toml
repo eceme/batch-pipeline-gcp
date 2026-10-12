@@ -1,0 +1,46 @@
+# Repositories tracked by the pipeline, grouped by category (canonical owner/name).
+[categories]
+orchestration = [
+    "apache/airflow",
+    "dagster-io/dagster",
+    "PrefectHQ/prefect",
+    "kestra-io/kestra",
+]
+transformation = [
+    "dbt-labs/dbt",
+    "SQLMesh/sqlmesh",
+]
+processing = [
+    "apache/spark",
+    "pola-rs/polars",
+    "duckdb/duckdb",
+    "apache/arrow",
+    "apache/datafusion",
+]
+streaming = [
+    "apache/kafka",
+    "apache/flink",
+    "redpanda-data/redpanda",
+]
+table_formats = [
+    "apache/iceberg",
+    "delta-io/delta",
+    "apache/hudi",
+]
+olap = [
+    "ClickHouse/ClickHouse",
+    "apache/druid",
+    "trinodb/trino",
+    "StarRocks/starrocks",
+]
+ingestion = [
+    "airbytehq/airbyte",
+    "dlt-hub/dlt",
+    "meltano/meltano",
+]
+data_quality_bi = [
+    "fivetran/great_expectations",
+    "sodadata/soda-core",
+    "apache/superset",
+    "metabase/metabase",
+]
