@@ -1,13 +1,17 @@
-"""Fetch metadata and star/fork counts for the tracked GitHub repositories."""
+"""Fetch metadata and star/fork counts for the tracked GitHub repositories and write them to GCS."""
 
+import argparse
 import logging
 import os
 import tomllib
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
+
+from ingestion import gcs
 
 REPOS_FILE = Path(__file__).parent / "repos.toml"
 API_URL = "https://api.github.com"
@@ -64,15 +68,41 @@ def fetch_repo(session: requests.Session, full_name: str) -> dict:
     return response.json()
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--date",
+        type=date.fromisoformat,
+        default=datetime.now(UTC).date(),
+        help="Snapshot date as YYYY-MM-DD (default: today in UTC)",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    args = parse_args()
+    snapshot_date = args.date.isoformat()
 
+    # Read all settings first so a missing variable fails before any API call.
     session = build_session(os.environ["GITHUB_TOKEN"])
-    repos = load_repos()
-    logger.info("Fetching %d repositories", len(repos))
+    bucket = os.environ["GCS_BUCKET"]
+    client = gcs.build_client(os.environ.get("IMPERSONATE_SA"))
 
+    repos = load_repos()
+    logger.info("Fetching %d repositories for %s", len(repos), snapshot_date)
+
+    records = []
     for full_name, category in repos:
         repo = fetch_repo(session, full_name)
+        records.append(
+            {
+                "snapshot_date": snapshot_date,
+                "ingested_at": datetime.now(UTC).isoformat(),
+                "category": category,
+                "payload": repo,
+            }
+        )
         logger.info(
             "%-35s %-16s stars=%7d forks=%6d",
             repo["full_name"],
@@ -81,7 +111,8 @@ def main() -> None:
             repo["forks_count"],
         )
 
-    logger.info("Done")
+    uri = gcs.upload_jsonl(client, bucket, f"raw/github/dt={snapshot_date}/repos.jsonl", records)
+    logger.info("Wrote %d records to %s", len(records), uri)
 
 
 if __name__ == "__main__":
