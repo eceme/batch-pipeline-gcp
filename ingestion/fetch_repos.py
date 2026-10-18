@@ -68,7 +68,17 @@ def fetch_repo(session: requests.Session, full_name: str) -> dict:
     return response.json()
 
 
-def parse_args() -> argparse.Namespace:
+def build_record(repo: dict, category: str, snapshot_date: str) -> dict:
+    """Wrap one API response in an envelope with ingestion metadata."""
+    return {
+        "snapshot_date": snapshot_date,
+        "ingested_at": datetime.now(UTC).isoformat(),
+        "category": category,
+        "payload": repo,
+    }
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--date",
@@ -76,7 +86,7 @@ def parse_args() -> argparse.Namespace:
         default=datetime.now(UTC).date(),
         help="Snapshot date as YYYY-MM-DD (default: today in UTC)",
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)  # None means sys.argv; tests pass a list.
 
 
 def main() -> None:
@@ -95,14 +105,7 @@ def main() -> None:
     records = []
     for full_name, category in repos:
         repo = fetch_repo(session, full_name)
-        records.append(
-            {
-                "snapshot_date": snapshot_date,
-                "ingested_at": datetime.now(UTC).isoformat(),
-                "category": category,
-                "payload": repo,
-            }
-        )
+        records.append(build_record(repo, category, snapshot_date))
         logger.info(
             "%-35s %-16s stars=%7d forks=%6d",
             repo["full_name"],

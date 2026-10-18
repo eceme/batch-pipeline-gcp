@@ -1,4 +1,4 @@
-# Python lint, format and lockfile checks.
+# Python lint, format, lockfile and unit test checks.
 name: python
 
 on:
@@ -25,3 +25,6 @@ jobs:
 
       - name: ruff format
         run: uv run ruff format --check --diff .
+
+      - name: pytest
+        run: uv run pytest

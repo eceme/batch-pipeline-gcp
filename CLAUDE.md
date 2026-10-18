@@ -36,8 +36,8 @@ Infrastructure is managed with Terraform.
 
 ```bash
 cd terraform && terraform fmt && terraform validate && terraform plan
-uv run ruff format . && uv run ruff check .        # Python format + lint (same checks as CI)
-uv run --env-file .env python -m ingestion.fetch_repos [--date YYYY-MM-DD]   # GitHub → GCS
+make check                    # Python lockfile, format, lint, tests (same as CI)
+make ingest [DATE=YYYY-MM-DD]  # GitHub → GCS
 ```
 
 ## Roadmap
