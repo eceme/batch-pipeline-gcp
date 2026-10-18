@@ -11,8 +11,13 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pytest>=9.1.1",
     "ruff>=0.17.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]  # Lets tests import the ingestion package from the repo root.
 
 [tool.ruff]
 line-length = 100
