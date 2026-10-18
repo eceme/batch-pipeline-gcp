@@ -1,17 +1,16 @@
 """Fetch metadata and star/fork counts for the tracked GitHub repositories and write them to GCS."""
 
-import argparse
 import logging
 import os
 import tomllib
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
-from ingestion import gcs
+from ingestion import cli, gcs
 
 REPOS_FILE = Path(__file__).parent / "repos.toml"
 API_URL = "https://api.github.com"
@@ -78,20 +77,9 @@ def build_record(repo: dict, category: str, snapshot_date: str) -> dict:
     }
 
 
-def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--date",
-        type=date.fromisoformat,
-        default=datetime.now(UTC).date(),
-        help="Snapshot date as YYYY-MM-DD (default: today in UTC)",
-    )
-    return parser.parse_args(argv)  # None means sys.argv; tests pass a list.
-
-
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    args = parse_args()
+    args = cli.parse_args(__doc__)
     snapshot_date = args.date.isoformat()
 
     # Read all settings first so a missing variable fails before any API call.
@@ -114,7 +102,7 @@ def main() -> None:
             repo["forks_count"],
         )
 
-    uri = gcs.upload_jsonl(client, bucket, f"raw/github/dt={snapshot_date}/repos.jsonl", records)
+    uri = gcs.upload_jsonl(client, bucket, gcs.raw_path(snapshot_date), records)
     logger.info("Wrote %d records to %s", len(records), uri)
 
 

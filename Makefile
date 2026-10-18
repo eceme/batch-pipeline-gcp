@@ -1,5 +1,5 @@
 # Shortcuts for common commands; run `make check` before pushing.
-.PHONY: check test ingest
+.PHONY: check test ingest load
 
 check:  ## Same checks as CI: lockfile, format, lint, tests
 	uv lock --check
@@ -12,3 +12,6 @@ test:  ## Unit tests only
 
 ingest:  ## GitHub -> GCS; optional DATE=YYYY-MM-DD
 	uv run --env-file .env python -m ingestion.fetch_repos $(if $(DATE),--date $(DATE))
+
+load:  ## GCS -> BigQuery raw.github_repos; optional DATE=YYYY-MM-DD
+	uv run --env-file .env python -m ingestion.load_to_bigquery $(if $(DATE),--date $(DATE))

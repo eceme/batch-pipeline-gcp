@@ -2,24 +2,21 @@
 
 import json
 
-import google.auth
-from google.auth import impersonated_credentials
 from google.cloud import storage
 from google.cloud.storage.retry import DEFAULT_RETRY
 
-SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
+from ingestion.auth import get_credentials
 
 
 def build_client(impersonate_sa: str | None = None) -> storage.Client:
-    """Return a Storage client using ADC, impersonating a service account if one is given."""
-    credentials, project = google.auth.default(scopes=SCOPES)
-    if impersonate_sa:
-        credentials = impersonated_credentials.Credentials(
-            source_credentials=credentials,
-            target_principal=impersonate_sa,
-            target_scopes=SCOPES,
-        )
+    """Return a Storage client, impersonating a service account if one is given."""
+    credentials, project = get_credentials(impersonate_sa)
     return storage.Client(credentials=credentials, project=project)
+
+
+def raw_path(snapshot_date: str) -> str:
+    """Return the object path of one day's raw GitHub file."""
+    return f"raw/github/dt={snapshot_date}/repos.jsonl"
 
 
 def upload_jsonl(client: storage.Client, bucket: str, path: str, records: list[dict]) -> str:
