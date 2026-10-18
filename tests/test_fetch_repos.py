@@ -1,10 +1,10 @@
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from unittest.mock import MagicMock
 
 import pytest
 import requests
 
-from ingestion.fetch_repos import API_URL, build_record, fetch_repo, load_repos, parse_args
+from ingestion.fetch_repos import API_URL, build_record, fetch_repo, load_repos
 
 
 def test_load_repos_returns_name_category_pairs(tmp_path):
@@ -53,21 +53,3 @@ def test_build_record_wraps_payload_with_metadata():
     assert record["category"] == "streaming"
     assert record["payload"] == repo
     assert before <= datetime.fromisoformat(record["ingested_at"]) <= after
-
-
-def test_parse_args_reads_date():
-    args = parse_args(["--date", "2026-10-16"])
-
-    assert args.date == date(2026, 10, 16)
-
-
-def test_parse_args_defaults_to_today_in_utc():
-    args = parse_args([])
-
-    assert args.date == datetime.now(UTC).date()
-
-
-@pytest.mark.parametrize("value", ["2026-13-01", "17-10-2026", "yesterday"])
-def test_parse_args_rejects_invalid_date(value):
-    with pytest.raises(SystemExit):
-        parse_args(["--date", value])

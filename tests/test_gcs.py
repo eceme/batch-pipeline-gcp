@@ -1,7 +1,11 @@
 import json
 from unittest.mock import MagicMock
 
-from ingestion.gcs import upload_jsonl
+from ingestion.gcs import raw_path, upload_jsonl
+
+
+def test_raw_path_uses_date_partition_folder():
+    assert raw_path("2026-10-16") == "raw/github/dt=2026-10-16/repos.jsonl"
 
 
 def test_upload_jsonl_writes_one_json_line_per_record():
