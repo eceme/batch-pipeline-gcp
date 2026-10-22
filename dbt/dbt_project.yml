@@ -8,5 +8,10 @@ test-paths: ["tests"]
 
 clean-targets: ["target", "dbt_packages"]
 
+models:
+  github_pipeline:
+    staging:
+      +materialized: view
+
 flags:
   send_anonymous_usage_stats: false

@@ -1,5 +1,5 @@
 # Shortcuts for common commands; run `make check` before pushing.
-.PHONY: check test ingest load dbt-debug
+.PHONY: check test ingest load dbt-debug dbt-run
 
 check:  ## Same checks as CI: lockfiles, format, lint, tests
 	uv lock --check
@@ -19,3 +19,6 @@ load:  ## GCS -> BigQuery raw.github_repos; optional DATE=YYYY-MM-DD
 
 dbt-debug:  ## Check that dbt can connect to BigQuery
 	cd dbt && uv run --env-file ../.env dbt debug
+
+dbt-run:  ## Build all dbt models in BigQuery
+	cd dbt && uv run --env-file ../.env dbt run
