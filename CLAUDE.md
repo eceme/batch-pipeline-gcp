@@ -41,6 +41,7 @@ make check                    # Python lockfile, format, lint, tests (same as CI
 make ingest [DATE=YYYY-MM-DD]  # GitHub → GCS
 make load [DATE=YYYY-MM-DD]    # GCS → BigQuery raw.github_repos (replaces that day's partition)
 make dbt-debug                 # dbt connection check (dbt has its own uv project in dbt/)
+make dbt-run                   # build dbt models
 ```
 
 ## Roadmap

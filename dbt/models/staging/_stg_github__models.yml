@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: stg_github__repos
+    description: One row per repository per snapshot date, with the JSON payload parsed into typed columns.
+    columns:
+      - name: snapshot_date
+        description: Day the snapshot belongs to (UTC).
+      - name: ingested_at
+        description: When the ingestion script fetched this repository.
+      - name: category
+        description: Category assigned in ingestion/repos.toml.
+      - name: repo_id
+        description: GitHub's numeric repository id; stable across renames.
+      - name: full_name
+        description: owner/name, as returned by GitHub on that day.
+      - name: owner_type
+        description: "'Organization' or 'User'."
+      - name: license_spdx_id
+        description: SPDX license identifier, e.g. 'Apache-2.0'; null if GitHub detected none.
+      - name: topics
+        description: Repository topics as an array of strings.
+      - name: stars
+        description: Star count at ingestion time.
+      - name: open_issues
+        description: Open issues plus open pull requests; GitHub counts them together.
+      - name: watchers
+        description: Users watching the repository (subscribers_count, not the legacy watchers_count).
+      - name: size_kb
+        description: Repository size in kilobytes, as reported by GitHub.
