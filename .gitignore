@@ -9,3 +9,7 @@ crash.log
 .DS_Store
 *.tfvars
 !*.tfvars.example
+# dbt build output and installed packages
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/

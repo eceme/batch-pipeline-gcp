@@ -30,6 +30,7 @@ Infrastructure is managed with Terraform.
 - Cost controls: GCS lifecycle rule deletes raw files after 30 days; no managed compute (Composer, Dataproc) — heavy tooling runs locally.
 - `force_destroy` / `delete_contents_on_destroy = true`: the whole stack must be removable with `terraform destroy`.
 - Terraform layout: `versions.tf`, `providers.tf`, `variables.tf`, `terraform.tfvars` (git-ignored; `terraform.tfvars.example` is committed), `storage.tf`, `bigquery.tf`, `iam.tf`, `outputs.tf`. No modules (single environment, small footprint).
+- dbt has its own uv project in `dbt/`: dbt-bigquery pins `google-cloud-storage<3.2`, which conflicts with the ingestion code.
 - Commit `.terraform.lock.hcl`; never commit state files, `.env`, or `*.json` credentials.
 
 ## Common commands
@@ -39,6 +40,7 @@ cd terraform && terraform fmt && terraform validate && terraform plan
 make check                    # Python lockfile, format, lint, tests (same as CI)
 make ingest [DATE=YYYY-MM-DD]  # GitHub → GCS
 make load [DATE=YYYY-MM-DD]    # GCS → BigQuery raw.github_repos (replaces that day's partition)
+make dbt-debug                 # dbt connection check (dbt has its own uv project in dbt/)
 ```
 
 ## Roadmap

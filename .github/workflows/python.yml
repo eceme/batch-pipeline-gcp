@@ -20,6 +20,9 @@ jobs:
       - name: uv lock --check
         run: uv lock --check
 
+      - name: uv lock --check (dbt)
+        run: uv lock --check --directory dbt
+
       - name: ruff check
         run: uv run ruff check --output-format=github .
 
