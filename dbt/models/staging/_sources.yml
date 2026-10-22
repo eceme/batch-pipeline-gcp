@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw data loaded by the ingestion scripts.
+    tables:
+      - name: github_repos
+        description: One row per repository per day; payload is the unmodified GitHub API response.
